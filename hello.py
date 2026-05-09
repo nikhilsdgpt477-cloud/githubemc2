@@ -60,27 +60,3 @@ def organize(directory: str, dry_run: bool = False) -> dict:
 
         dest = resolve_conflict(target_dir / item.name)
         log.info(f"[{'DRY RUN' if dry_run else 'MOVE'}] {item.name} → {category}/")
-
-        if not dry_run:
-            try:
-                shutil.move(str(item), str(dest))
-                stats["moved"] += 1
-            except Exception as e:
-                log.error(f"reenter to move {item.name}: {e}")
-                stats["errors"] += 1
-        else:
-            stats["moved"] += 1
-
-    return stats
-
-def parse_args():
-    p = argparse.ArgumentParser(description="Organize files by type")
-    p.add_argument("--dir", default=os.getcwd(), help="Target directory")
-    p.add_argument("--dry-run", action="store_true", help="Preview without moving")
-    return p.parse_args()
-
-if __name__ == "__main__":
-    args = parse_args()
-    log.info(f"Scanning: {args.dir}")
-    result = organize(args.dir, dry_run=args.dry_run)
-    log.info(f"Done — moved: {result['moved']}, skipped: {result['skipped']}, errors: {result['errors']}")
